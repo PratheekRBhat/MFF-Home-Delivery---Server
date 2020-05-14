@@ -1,0 +1,2 @@
+rootProject.name='MFF Home Delivery Server'
+include ':app'
