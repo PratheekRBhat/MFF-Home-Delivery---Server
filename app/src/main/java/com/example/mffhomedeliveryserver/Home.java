@@ -2,8 +2,10 @@ package com.example.mffhomedeliveryserver;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.TextView;
 
 import com.example.mffhomedeliveryserver.Common.Common;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -11,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -20,14 +23,20 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class Home extends AppCompatActivity {
-
+public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
+    DrawerLayout drawer;
     private AppBarConfiguration mAppBarConfiguration;
+    private NavController navController;
+
+    int menuClickId = -1;
+
+    android.app.AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -38,17 +47,25 @@ public class Home extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_menu, R.id.nav_order)
                 .setDrawerLayout(drawer)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.bringToFront();
+
+        //To set the header of the navigation bar.
+        View headerView = navigationView.getHeaderView(0);
+        TextView txt_user = headerView.findViewById(R.id.txt_user);
+        Common.setSpanString("Hey, ",  Common.currentServerUser.getName(), txt_user);
+
     }
 
     @Override
@@ -65,6 +82,31 @@ public class Home extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        item.setChecked(true);
+        drawer.closeDrawers();
+
+        switch (item.getItemId()) {
+            case R.id.nav_menu:
+                navController.navigate(R.id.nav_menu);
+                break;
+            case R.id.nav_order:
+                navController.navigate(R.id.nav_order);
+                break;
+            case R.id.nav_sign_out:
+                signOut();
+                menuClickId = -1;
+                break;
+            default:
+                menuClickId = -1;
+                break;
+        }
+        menuClickId = item.getItemId();
+
+        return true;
+    }
+
     private void signOut() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Sign Out")
@@ -72,7 +114,7 @@ public class Home extends AppCompatActivity {
                 .setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss())
                 .setPositiveButton("Confirm", (dialogInterface, i) -> {
 //                    Common.categorySelected = null;
-//                    Common.currentUser = null;
+                    Common.currentServerUser = null;
                     FirebaseAuth.getInstance().signOut();
 
                     Intent signOutIntent = new Intent(Home.this, MainActivity.class);

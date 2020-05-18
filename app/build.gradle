@@ -51,4 +51,14 @@ dependencies {
 
     //Dialog Library
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
+
+    //UI Libraries
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.jakewharton:butterknife:10.2.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
+    //Communication between activities and fragments
+    implementation 'org.greenrobot:eventbus:3.2.0'
 }
