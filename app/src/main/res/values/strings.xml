@@ -25,5 +25,10 @@
     <string name="your_address">Enter your address</string>
 
     <string name="nav_user_name">User\'s Name</string>
+    <string name="order_number">Order Number</string>
+    <string name="order_date">Order Date</string>
+    <string name="name_of_the_customer">Name of the customer</string>
+    <string name="no_of_items">Number of items ordered</string>
+    <string name="order_status">Order Status</string>
 
 </resources>

@@ -62,4 +62,10 @@ dependencies {
 
     //Communication between activities and fragments
     implementation 'org.greenrobot:eventbus:3.2.0'
+
+//    //Data Storage
+//    implementation 'androidx.room:room-compiler:2.2.5'
+//    annotationProcessor 'androidx.room:room-compiler:2.2.5'
+//    implementation 'androidx.room:room-rxjava2:2.2.5'
+//    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 }
