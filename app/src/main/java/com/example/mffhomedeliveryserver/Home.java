@@ -6,8 +6,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mffhomedeliveryserver.Common.Common;
+import com.example.mffhomedeliveryserver.EventBus.CategoryClick;
+import com.example.mffhomedeliveryserver.EventBus.MenuItemBack;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -22,6 +25,10 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
     DrawerLayout drawer;
@@ -39,20 +46,12 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_menu, R.id.nav_order)
+                R.id.nav_menu, R.id.nav_order, R.id.nav_foodList)
                 .setDrawerLayout(drawer)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -124,5 +123,35 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    @Override
+    protected void onStart() {
+        //Receive notification from CategoryAdapter.
+        EventBus.getDefault().register(this);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        //Receive notification from CategoryAdapter.
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    //Navigate to Food List using EventBus for communication.
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onCategorySelected(CategoryClick event) {
+        if (event.isSuccess()) {
+            navController.navigate(R.id.nav_foodList);
+//            Toast.makeText(this, "Click to "+event.getCategory().getName(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onMenuItemBack(MenuItemBack event) {
+        menuClickId = -1;
+        if(getSupportFragmentManager().getBackStackEntryCount() > 0)
+            getSupportFragmentManager().popBackStack();
     }
 }

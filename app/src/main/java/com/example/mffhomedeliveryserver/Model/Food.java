@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Food {
     private String name, image, id, description;
+    private boolean available;
     private Long price;
 
     public Food() {
@@ -47,5 +48,13 @@ public class Food {
 
     public void setPrice(Long price) {
         this.price = price;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 }

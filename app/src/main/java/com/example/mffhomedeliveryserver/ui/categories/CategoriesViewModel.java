@@ -45,8 +45,8 @@ public class CategoriesViewModel extends ViewModel implements CategoryCallbackLi
                 for(DataSnapshot itemSnapShot: dataSnapshot.getChildren())
                 {
                     Category category = itemSnapShot.getValue(Category.class);
-                    category.setMenu_id(itemSnapShot.getKey());
-                    tempList.add(itemSnapShot.getValue(Category.class));
+//                    category.setMenu_id(itemSnapShot.getKey());
+                    tempList.add(category);
                 }
                 categoryCallbackListener.onCategoryLoadSuccess(tempList);
             }

@@ -11,6 +11,13 @@
     <string name="menu_order">Orders</string>
     <string name="menu_sign_out">Sign Out</string>
     <string name="menu_menu">Categories</string>
+    <string name="menu_foodList">Food List</string>
+
+    <string name="food_name">Name of the food</string>
+    <string name="food_price">Rs. 100</string>
+    <string name="desc">Description</string>
+    <string name="food_category">Food Category</string>
+    <string name="vegetarian">Vegetarian</string>
 
     <string name="home_second">Home Second</string>
 
