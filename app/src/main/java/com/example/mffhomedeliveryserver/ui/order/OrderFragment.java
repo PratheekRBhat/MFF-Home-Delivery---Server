@@ -2,6 +2,8 @@ package com.example.mffhomedeliveryserver.ui.order;
 
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 
 import com.example.mffhomedeliveryserver.Adapter.OrdersAdapter;
 import com.example.mffhomedeliveryserver.Common.BottomSheetOrderFragment;
+import com.example.mffhomedeliveryserver.EventBus.CallEvent;
 import com.example.mffhomedeliveryserver.EventBus.LoadOrderEvent;
 import com.example.mffhomedeliveryserver.R;
 
@@ -31,6 +34,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class OrderFragment extends Fragment {
@@ -122,5 +126,15 @@ public class OrderFragment extends Fragment {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onLoadOrderEvent(LoadOrderEvent event) {
         orderViewModel.loadOrderByStatus(event.getStatus());
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onCallButtonCLicked(CallEvent event){
+        if (event.getOrderItem() != null) {
+            String number = event.getOrderItem().getUserPhone();
+            Intent callIntent = new Intent(Intent.ACTION_DIAL);
+            callIntent.setData(Uri.parse("tel:"+number));
+            startActivity(callIntent);
+        }
     }
 }

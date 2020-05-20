@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,8 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.mffhomedeliveryserver.Common.Common;
+import com.example.mffhomedeliveryserver.EventBus.CallEvent;
 import com.example.mffhomedeliveryserver.Model.Orders;
 import com.example.mffhomedeliveryserver.R;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,6 +26,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHolder> {
@@ -54,6 +59,10 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
         Common.setSpanStringColor("Number of items  ", ordersList.get(position).getCartItemList() == null ? "0" :
                 String.valueOf(ordersList.get(position).getCartItemList().size()),
                 holder.numberOfItemsTV, Color.parseColor("#4B647D"));
+        holder.callButton.setOnClickListener(view -> {
+            Orders orders = ordersList.get(position);
+            EventBus.getDefault().postSticky(new CallEvent(orders, position));
+        });
     }
 
     @Override
@@ -72,6 +81,8 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
         TextView numberOfItemsTV;
         @BindView(R.id.img_order_item)
         ImageView orderIV;
+        @BindView(R.id.call_btn)
+        Button callButton;
 
         Unbinder unbinder;
 
