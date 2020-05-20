@@ -39,7 +39,7 @@ public class BottomSheetOrderFragment extends BottomSheetDialogFragment {
         EventBus.getDefault().postSticky(new LoadOrderEvent(-1));
     }
 
-    private static BottomSheetOrderFragment instance;
+    static BottomSheetOrderFragment instance;
     Unbinder unbinder;
 
     public static BottomSheetOrderFragment getInstance() {

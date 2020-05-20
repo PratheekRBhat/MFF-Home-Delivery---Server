@@ -37,5 +37,12 @@
     <string name="shipped">Shipped</string>
     <string name="order_placed_0">Order Placed(0)</string>
     <string name="cancelled">Cancelled</string>
+    <string name="status_placed">Status: Placed</string>
+    <string name="update_order_status">Update Order Status</string>
+    <string name="update_order">Update Order</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="restore_placed">Restore Placed</string>
+    <string name="delete">Delete</string>
 
 </resources>

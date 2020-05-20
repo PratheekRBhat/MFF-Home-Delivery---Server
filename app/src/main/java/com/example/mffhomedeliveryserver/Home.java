@@ -86,9 +86,11 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         switch (item.getItemId()) {
             case R.id.nav_menu:
+                navController.popBackStack();
                 navController.navigate(R.id.nav_menu);
                 break;
             case R.id.nav_order:
+                navController.popBackStack();
                 navController.navigate(R.id.nav_order);
                 break;
             case R.id.nav_sign_out:

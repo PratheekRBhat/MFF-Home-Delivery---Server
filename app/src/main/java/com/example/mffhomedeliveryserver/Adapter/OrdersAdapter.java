@@ -70,6 +70,14 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
         return ordersList.size();
     }
 
+    public Orders getItemAtPosition(int pos) {
+        return ordersList.get(pos);
+    }
+
+    public void removeItem(int pos) {
+        ordersList.remove(pos);
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.txt_order_date)
         TextView orderDateTV;
