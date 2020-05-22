@@ -42,11 +42,17 @@ import com.example.mffhomedeliveryserver.Common.Common;
 import com.example.mffhomedeliveryserver.Common.SwipeHelper;
 import com.example.mffhomedeliveryserver.EventBus.CallEvent;
 import com.example.mffhomedeliveryserver.EventBus.LoadOrderEvent;
+import com.example.mffhomedeliveryserver.Model.FCMResponse;
+import com.example.mffhomedeliveryserver.Model.FCMSendData;
 import com.example.mffhomedeliveryserver.Model.Orders;
+import com.example.mffhomedeliveryserver.Model.TokenModel;
 import com.example.mffhomedeliveryserver.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.example.mffhomedeliveryserver.Remotes.IFCMServices;
+import com.example.mffhomedeliveryserver.Remotes.RetrofitFCMClient;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -58,16 +64,20 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
-
-import static java.lang.Math.round;
+import dmax.dialog.SpotsDialog;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class OrderFragment extends Fragment {
     @BindView(R.id.recycler_orders_server)
     RecyclerView ordersRV;
     @BindView(R.id.txt_order_filter)
     TextView orderFilterTV;
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    IFCMServices ifcmServices;
 
     Unbinder unbinder;
     private LayoutAnimationController layoutAnimationController;
@@ -82,6 +92,8 @@ public class OrderFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_order, container, false);
 
         unbinder = ButterKnife.bind(this, root);
+
+        ifcmServices = RetrofitFCMClient.getInstance().create(IFCMServices.class);
 
         orderViewModel.getMessageError().observe(getViewLifecycleOwner(), s -> {
             Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
@@ -232,6 +244,55 @@ public class OrderFragment extends Fragment {
             Map<String, Object> updateData= new HashMap<>();
             updateData.put("orderStatus", status);
 
+            android.app.AlertDialog dialog = new SpotsDialog.Builder().setContext(getContext()).setCancelable(false).build();
+            dialog.show();
+
+            //Get token id.
+            FirebaseDatabase.getInstance()
+                    .getReference(Common.TOKEN_REF)
+                    .child(orders.getUserId())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                TokenModel tokenModel = dataSnapshot.getValue(TokenModel.class);
+
+                                Map<String, String> notificationData = new HashMap<>();
+                                notificationData.put(Common.NOTI_TITLE, "Your order was updated");
+                                notificationData.put(Common.NOTI_CONTENT, new StringBuilder("Your current order status is: ")
+                                .append(Common.convertStatusToString(status)).toString());
+
+                                FCMSendData sendData = new FCMSendData(tokenModel.getToken(), notificationData);
+
+                                compositeDisposable.add(ifcmServices.sendNotification(sendData)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(fcmResponse -> {
+                                            dialog.dismiss();
+
+                                            if (fcmResponse.getSuccess() == 1) {
+                                                Toast.makeText(getContext(), "Order updated successfully", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(getContext(), "Order updated successfully but failed to send notification", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }, throwable -> {
+                                            dialog.dismiss();
+                                            Toast.makeText(getContext(), ""+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }));
+                            } else {
+                                dialog.dismiss();
+                                Toast.makeText(getContext(), "Token not found", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            dialog.dismiss();
+                            Toast.makeText(getContext(), ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+
             FirebaseDatabase.getInstance().getReference(Common.ORDER_REF)
                     .child(orders.getOrderNumber())
                     .updateChildren(updateData)
@@ -269,8 +330,6 @@ public class OrderFragment extends Fragment {
             return  super.onOptionsItemSelected(item);
     }
 
-
-
     @Override
     public void onStart() {
         super.onStart();
@@ -284,6 +343,7 @@ public class OrderFragment extends Fragment {
             EventBus.getDefault().removeStickyEvent(LoadOrderEvent.class);
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
+        compositeDisposable.clear();
         super.onStop();
     }
 
