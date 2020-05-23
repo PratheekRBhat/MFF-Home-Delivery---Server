@@ -44,5 +44,6 @@
     <string name="ok">OK</string>
     <string name="restore_placed">Restore Placed</string>
     <string name="delete">Delete</string>
+    <string name="food_quantity">Quantity: 1</string>
 
 </resources>
