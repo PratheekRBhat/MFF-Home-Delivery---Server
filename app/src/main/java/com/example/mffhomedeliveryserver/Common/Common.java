@@ -37,6 +37,7 @@ public class Common {
 
     public static final String NOTI_TITLE = "title";
     public static final String NOTI_CONTENT = "content";
+    public static final String IS_OPEN_ACTIVITY_NEW_ORDER = "IsOpenActivityNewOrder";
 
     public static ServerUser currentServerUser;
     public static Category categorySelected;

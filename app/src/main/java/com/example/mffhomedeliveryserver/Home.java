@@ -15,6 +15,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import androidx.annotation.NonNull;
@@ -69,7 +70,28 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         TextView txt_user = headerView.findViewById(R.id.txt_user);
         Common.setSpanString("Hey, ",  Common.currentServerUser.getName(), txt_user);
 
+        menuClickId = R.id.nav_menu;
+
+        checkIsOpenFromActivity();
     }
+
+    private void checkIsOpenFromActivity() {
+        boolean isOpenFromNewOrder = getIntent().getBooleanExtra(Common.IS_OPEN_ACTIVITY_NEW_ORDER, false);
+        if (isOpenFromNewOrder) {
+            navController.popBackStack();
+            navController.navigate(R.id.nav_order);
+            menuClickId = R.id.nav_order;
+        }
+    }
+
+//    private void updateToken() {
+//        FirebaseInstanceId.getInstance()
+//                .getInstanceId()
+//                .addOnFailureListener(e -> Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show())
+//                .addOnSuccessListener(instanceIdResult -> {
+//                    Common.updateToken(Home.this, instanceIdResult.getToken());
+//                });
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

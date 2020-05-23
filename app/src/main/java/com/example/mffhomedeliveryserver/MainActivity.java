@@ -155,7 +155,10 @@ public class MainActivity extends AppCompatActivity {
         dialog.dismiss();
 
         Common.currentServerUser = serverUser;
-        startActivity(new Intent(MainActivity.this, Home.class));
+
+        Intent intent = new Intent(MainActivity.this, Home.class);
+        intent.putExtra(Common.IS_OPEN_ACTIVITY_NEW_ORDER, getIntent().getBooleanExtra(Common.IS_OPEN_ACTIVITY_NEW_ORDER, false));
+        startActivity(intent);
         finish();
     }
 
